@@ -12,13 +12,6 @@ from datetime import datetime, timedelta
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-
-def clear_images():
-    '''
-    Clears the wallpaper directory of all old jpgs as the upscalling creates large images
-    '''
-    os.system("rm ~/wallpaper/*.jpg")
-
 def get_monitor_count(resolutions,displays = {}):
     nth = {
         0: "first",
@@ -99,7 +92,6 @@ def up_scale(space_photo,date,description,resolution):
     cv2.imwrite(f'/Users/jacobl/wallpaper/{date}_up.jpg',resized) 
 
 def main():
-    clear_images()
     displays = get_monitor_resolutions()
     for display,resolution in displays.items():
         site,date = get_site()
