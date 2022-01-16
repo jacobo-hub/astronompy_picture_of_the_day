@@ -1,25 +1,23 @@
 #!/usr/local/bin/python3
+import io
 import os
-import subprocess
-import json
 import time
 import cv2
 import requests
+import numpy as np
+from statistics import mean
+from random import randrange
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from random import randrange
-import numpy as np
-import io
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from statistics import mean
+
 
 def clear_images():
     '''
-    Clears the wallpaper directory of all old jpgs 
+    Clears the wallpaper directory of all old jpgs as the upscalling creates large images
     '''
-    
-    os.system("rm /Users/jacobl/wallpaper/*.jpg")
+    os.system("rm ~/wallpaper/*.jpg")
 
 def get_monitor_count(resolutions,displays = {}):
     nth = {
@@ -39,27 +37,31 @@ def get_monitor_resolutions(displays = {}):
     displays = get_monitor_count(resolutions,displays)
     return displays
 
+def get_site():
+    delta = randrange(0,100)
+    today = datetime.today() - timedelta(days=delta)
+    date = today.strftime('%y%m%d')
+    site = f'https://apod.nasa.gov/apod/ap{date}.html'
+    return site,date
+
 def get_dates(delta):
     '''
     The site uses this URL to host the https://apod.nasa.gov/apod/image/2201/PIA19048europa.jpg, so we need to calculate the date in YMd format.
     '''
-    today = datetime.today() - timedelta(days=delta)
-    date = today.strftime('%y%m%d')
+    
     return date
 
 def find_image(site):
-    """
-    God bless this library
-    """
     soup = BeautifulSoup(requests.get(site).text, 'html.parser')
-    img_tag = soup.find('img')
-    img_url = img_tag.get('src')
-    description = soup.find_all('b')[0].text
-    return img_url,description
+    try:
+        img_tag = soup.find('img')
+        img_url = img_tag.get('src')
+        description = soup.find_all('b')[0].text
+        return img_url,description
+    except AttributeError:
+        site = get_site()
+        find_image(site)
 
-def get_opencv_img_from_buffer(buffer):
-    thing = np.asarray(bytearray(buffer.read()), dtype="uint8")
-    return thing
 
 def make_request(url):
     s = requests.Session()
@@ -94,21 +96,13 @@ def up_scale(space_photo,date,description,resolution):
     height = int(res[1] * scale_percent / 100)
     dim = (width, height)
     resized = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR)
-    '''
-    textX = mean(resized.shape) - (len(description) / 2)
-    textY = mean(resized.shape) - (len(description) / 2)
-    org = (int(textX), int(textY))
-    cv2.putText(resized, description, org,cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
-    '''
     cv2.imwrite(f'/Users/jacobl/wallpaper/{date}_up.jpg',resized) 
 
 def main():
     clear_images()
     displays = get_monitor_resolutions()
     for display,resolution in displays.items():
-        x = randrange(0,2000)
-        date = get_dates(x)
-        site = f'https://apod.nasa.gov/apod/ap{date}.html'
+        site,date = get_site()
         img_url,description = find_image(site)
         space_photo = get_image(img_url,site,date)
         up_scale(space_photo,date,description,resolution)
