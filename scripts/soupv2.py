@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
+
 def get_monitor_count(resolutions,displays = {}):
     nth = {
         0: "first",
@@ -83,7 +84,7 @@ def up_scale(space_photo,date,description,resolution):
 
     res = [int(resolution.split('x')[0].strip()),int(resolution.split('x')[1].strip())]
     scale_percent = 0.5*mean(res)
-    if res[0]>res[1]:
+    if res[0]<res[1]:
        img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
     width = int(res[0] * scale_percent / 100)
     height = int(res[1] * scale_percent / 100)
