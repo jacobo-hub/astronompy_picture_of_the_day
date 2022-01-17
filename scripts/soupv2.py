@@ -41,7 +41,6 @@ def get_site():
     return site,date
 
 def find_image(site):
-    print(site)
     soup = BeautifulSoup(requests.get(site).text, 'html.parser')
     try:
         img_tag = soup.find('img')
@@ -50,14 +49,17 @@ def find_image(site):
         return img_url,description
     except AttributeError:
         site = get_site()
-        find_image(site)
+        img_url,description = find_image(site)
+        return img_url,description
 
 
 def make_request(url):
+
     s = requests.Session()
     retries = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504 ])
     s.mount('http://', HTTPAdapter(max_retries=retries))
     response = s.get(url, stream=True)
+
     return response
 
 def get_image(img_dir,site,date):
@@ -77,9 +79,10 @@ def up_scale(space_photo,date,description,resolution):
     Uses opencv to upscale the image to and write their description
     '''
     img = cv2.imdecode(space_photo, cv2.IMREAD_COLOR)
+    print(img.shape)
 
     res = [int(resolution.split('x')[0].strip()),int(resolution.split('x')[1].strip())]
-    scale_percent = 0.1*mean(res)
+    scale_percent = 0.75*mean(res)
     if res[0]<res[1]:
        img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
     width = int(res[0] * scale_percent / 100)
