@@ -41,6 +41,7 @@ def get_site():
     return site,date
 
 def find_image(site):
+    print(site)
     soup = BeautifulSoup(requests.get(site).text, 'html.parser')
     try:
         img_tag = soup.find('img')
