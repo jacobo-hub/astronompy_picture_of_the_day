@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
+def clear_images():
+    os.system('rm /Users/jacobl/wallpaper/*_up.jpg')
 
 def get_monitor_count(resolutions,displays = {}):
     nth = {
@@ -27,25 +29,19 @@ def get_monitor_count(resolutions,displays = {}):
     return displays
 
 def get_monitor_resolutions(displays = {}):
-    resolutions = os.popen('system_profiler SPDisplaysDataType | grep Resolution').read().split('\n')
+    resolutions = os.popen('/usr/sbin/system_profiler SPDisplaysDataType | grep Resolution').read().split('\n')
     displays = get_monitor_count(resolutions,displays)
     return displays
 
 def get_site():
-    delta = randrange(0,100)
+    delta = randrange(0,500)
     today = datetime.today() - timedelta(days=delta)
     date = today.strftime('%y%m%d')
     site = f'https://apod.nasa.gov/apod/ap{date}.html'
     return site,date
 
-def get_dates(delta):
-    '''
-    The site uses this URL to host the https://apod.nasa.gov/apod/image/2201/PIA19048europa.jpg, so we need to calculate the date in YMd format.
-    '''
-    
-    return date
-
 def find_image(site):
+    print(site)
     soup = BeautifulSoup(requests.get(site).text, 'html.parser')
     try:
         img_tag = soup.find('img')
@@ -83,7 +79,7 @@ def up_scale(space_photo,date,description,resolution):
     img = cv2.imdecode(space_photo, cv2.IMREAD_COLOR)
 
     res = [int(resolution.split('x')[0].strip()),int(resolution.split('x')[1].strip())]
-    scale_percent = 0.5*mean(res)
+    scale_percent = 0.1*mean(res)
     if res[0]<res[1]:
        img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
     width = int(res[0] * scale_percent / 100)
@@ -93,6 +89,7 @@ def up_scale(space_photo,date,description,resolution):
     cv2.imwrite(f'/Users/jacobl/wallpaper/{date}_up.jpg',resized) 
 
 def main():
+    clear_images()
     displays = get_monitor_resolutions()
     for display,resolution in displays.items():
         site,date = get_site()
