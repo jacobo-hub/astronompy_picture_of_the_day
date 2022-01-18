@@ -6,5 +6,6 @@ This project uses Python to scrape photos from [NASA's Astronomy Picture of the 
 All required packages and versions are defined in requirments.txt. 
 
 `conda install --file requirements.txt`
+
 `pip install -r requirements.txt`
 
