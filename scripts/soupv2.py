@@ -49,7 +49,6 @@ def find_image(site):
         description = soup.find_all('b')[0].text
         return img_url,description
     except AttributeError as e:
-        print(e)
         time.sleep(5.0)
         site,date = get_site()
         img_url,description = find_image(site)
