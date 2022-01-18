@@ -38,19 +38,22 @@ def get_site():
     today = datetime.today() - timedelta(days=delta)
     date = today.strftime('%y%m%d')
     site = f'https://apod.nasa.gov/apod/ap{date}.html'
+    print(site)
     return site,date
 
 def find_image(site):
-    print(site)
-    soup = BeautifulSoup(requests.get(site).text, 'html.parser')
     try:
+        soup = BeautifulSoup(requests.get(site).text, 'html.parser')
         img_tag = soup.find('img')
         img_url = img_tag.get('src')
         description = soup.find_all('b')[0].text
         return img_url,description
-    except AttributeError:
+    except AttributeError as e:
+        print(e)
+        time.sleep(5.0)
         site = get_site()
-        find_image(site)
+        img_url,description = find_image(site)
+        return img_url,description
 
 
 def make_request(url):
@@ -66,7 +69,6 @@ def get_image(img_dir,site,date):
     '''
     img_url = f"{site.replace(f'ap{date}.html','')}{img_dir}"
     space_photo = make_request(img_url).content
-    
     space_photo = io.BytesIO(space_photo)
     space_photo.decode_content = True
     image = np.asarray(bytearray(space_photo.read()), dtype="uint8")
@@ -77,9 +79,8 @@ def up_scale(space_photo,date,description,resolution):
     Uses opencv to upscale the image to and write their description
     '''
     img = cv2.imdecode(space_photo, cv2.IMREAD_COLOR)
-
     res = [int(resolution.split('x')[0].strip()),int(resolution.split('x')[1].strip())]
-    scale_percent = 0.1*mean(res)
+    scale_percent = 0.25*mean(res)
     if res[0]<res[1]:
        img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
     width = int(res[0] * scale_percent / 100)
