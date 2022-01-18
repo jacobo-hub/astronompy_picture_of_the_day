@@ -80,7 +80,11 @@ def up_scale(space_photo,date,description,resolution):
     '''
     img = cv2.imdecode(space_photo, cv2.IMREAD_COLOR)
     res = [int(resolution.split('x')[0].strip()),int(resolution.split('x')[1].strip())]
+<<<<<<< HEAD
     scale_percent = 0.25*mean(res)
+=======
+    scale_percent = 0.75*mean(res)
+>>>>>>> 3eea9ef51e4ea5c7dbfeb0052197cb14e9297f52
     if res[0]<res[1]:
        img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
     width = int(res[0] * scale_percent / 100)
@@ -102,5 +106,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
