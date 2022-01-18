@@ -34,7 +34,7 @@ def get_monitor_resolutions(displays = {}):
     return displays
 
 def get_site():
-    delta = randrange(0,500)
+    delta = randrange(0,364)
     today = datetime.today() - timedelta(days=delta)
     date = today.strftime('%y%m%d')
     site = f'https://apod.nasa.gov/apod/ap{date}.html'
@@ -51,7 +51,7 @@ def find_image(site):
     except AttributeError as e:
         print(e)
         time.sleep(5.0)
-        site = get_site()
+        site,date = get_site()
         img_url,description = find_image(site)
         return img_url,description
 
