@@ -16,7 +16,7 @@ from requests.packages.urllib3.util.retry import Retry
 def create_directories():
     working_dir = "/".join(os.getcwd().split("/")[0:3])
     if not os.path.exists(f"{working_dir}/wallpaper"):
-        file = os.mkdir(f"{working_dir}/wallpaper")
+        os.mkdir(f"{working_dir}/wallpaper")
     return f'{working_dir}/wallpaper'
     
 def clear_images(directory):
