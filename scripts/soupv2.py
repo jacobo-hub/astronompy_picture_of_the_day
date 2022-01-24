@@ -3,6 +3,7 @@ import io
 import os
 import time
 import cv2
+import glob
 import requests
 import numpy as np
 from statistics import mean
@@ -12,9 +13,17 @@ from datetime import datetime, timedelta
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-def clear_images():
-    os.system('rm /Users/jacobl/wallpaper/*_up.jpg')
-
+def create_directories():
+    working_dir = "/".join(os.getcwd().split("/")[0:3])
+    if not os.path.exists(f"{working_dir}/wallpaper"):
+        file = os.mkdir(f"{working_dir}/wallpaper")
+    return f'{working_dir}/wallpaper'
+    
+def clear_images(directory):
+    old_images = f"{directory}/*.jpg"
+    for image in glob.glob(old_images): 
+        os.remove(image)
+       
 def get_monitor_count(resolutions,displays = {}):
     nth = {
         0: "first",
@@ -73,31 +82,32 @@ def get_image(img_dir,site,date):
     image = np.asarray(bytearray(space_photo.read()), dtype="uint8")
     return image
 
-def up_scale(space_photo,date,description,resolution):
+def up_scale(dir,space_photo,date,description,resolution):
     '''
     Uses opencv to upscale the image to and write their description
     '''
     img = cv2.imdecode(space_photo, cv2.IMREAD_COLOR)
     res = [int(resolution.split('x')[0].strip()),int(resolution.split('x')[1].strip())]
-    scale_percent = 0.1*mean(res)
+    scale_percent = 0.25*mean(res)
     if res[0]<res[1]:
        img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
     width = int(res[0] * scale_percent / 100)
     height = int(res[1] * scale_percent / 100)
     dim = (width, height)
     resized = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR)
-    cv2.imwrite(f'/Users/jacobl/wallpaper/{date}_up.jpg',resized) 
+    cv2.imwrite(f'{dir}/{date}_up.jpg',resized) 
 
 def main():
-    clear_images()
+    dir = create_directories()
+    clear_images(dir)
     displays = get_monitor_resolutions()
     for display,resolution in displays.items():
         site,date = get_site()
         img_url,description = find_image(site)
         space_photo = get_image(img_url,site,date)
-        up_scale(space_photo,date,description,resolution)
+        up_scale(dir,space_photo,date,description,resolution)
         time.sleep(.5)
-        os.system(f"osascript -e 'tell application \"System Events\" to set picture of {display} desktop to \"/Users/jacobl/wallpaper/{date}_up.jpg\"'") #update the desktop backround for each monitor
+        os.system(f"osascript -e 'tell application \"System Events\" to set picture of {display} desktop to \"{dir}/{date}_up.jpg\"'") #update the desktop backround for each monitor
 
 if __name__ == "__main__":
     main()
