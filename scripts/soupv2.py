@@ -1,8 +1,8 @@
 #!/usr/local/bin/python3
 import io
 import os
-import time
 import cv2
+import time
 import glob
 import requests
 import numpy as np
@@ -11,7 +11,7 @@ from random import randrange
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util.retry import Retry
 
 def create_directories():
     working_dir = "/".join(os.getcwd().split("/")[0:3])

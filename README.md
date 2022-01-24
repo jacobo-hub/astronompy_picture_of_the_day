@@ -6,3 +6,6 @@ This project uses Python to scrape photos from [NASA's Astronomy Picture of the 
 All required python libraries and versions are defined in requirments.txt. 
 
 `pip3 install -r requirements.txt`
+
+### Running periodically
+ 
