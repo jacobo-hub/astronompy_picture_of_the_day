@@ -6,7 +6,7 @@ This project uses Python to scrape photos from [NASA's Astronomy Picture of the 
 All required python libraries and versions are defined in requirments.txt. 
 `pip3 install -r requirements.txt`
 
-### Running ad-hoc
+### Running Ad-Hoc
  In the terminal navigate to the directory where the source code lives, for example, 
 `cd /Users/{username}/astronompy_picture_of_the_day-main/scripts`
  
