@@ -82,7 +82,7 @@ def get_image(dir,date):
     
     url = 'https://api.nasa.gov/planetary/apod'
     params = {
-        'date': "1997-05-14",
+        'date': date,
         'api_key': 'gIyYysKXvewhmzbl6SY1z46MxNCfLaFhOuuo36xq',
         'thumbs': False
         }
